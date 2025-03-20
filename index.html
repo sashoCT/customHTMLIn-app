@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<style>
+body {
+background-color: #e6e6fa;
+}
+</style>
+<body>
+<h1>Survey Form</h1>
+<p>Have you used zone guide:</p>
+<input type="radio" id="yes" name="zone_guide" value="Yes" />
+<label for="yes">Yes</label><br />
+<input type="radio" id="no" name="zone_guide" value="No" />
+<label for="no">No</label><br />
+<p>Do you find it useful</p>
+<label class="radio-inline"> <input type="radio" name="optradio" value="1" />1 </label>
+<label class="radio-inline"> <input type="radio" name="optradio" value="2" />2 </label>
+<label class="radio-inline"> <input type="radio" name="optradio" value="3" />3 </label>
+<label class="radio-inline"> <input type="radio" name="optradio" value="4" />4 </label>
+<label class="radio-inline"> <input type="radio" name="optradio" value="5" />5 </label>
+<br />
+<br />
+<label for="improve">What can be improved in zone guide</label>
+<select id="improve" name="suggestion">
+<option value="Nothing, I know the restaurants which give the most orders">Nothing, I know the restaurants which give the most orders</option>
+<option value="There are too many suggestions shown">There are too many suggestions shown</option>
+<option value="We do not get an order after following">We do not get an order after following</option>
+</select>
+<br />
+<br />
+<!-- EVENT TRACKING -->
+<!-- Track an additional Event property together with the default Notification Clicked event.
+The event property name will be wzrk_c2a and the event property value will be ClickMeButton.
+-->
+<form><button name="wzrk_c2a" value="ClickMeButton">ClickMe</button></form>
+<!-- The same as above but also track some custom event or a user property - outside of the context of the Notification Clicked event.-->
+<form><button name="wzrk_c2a" value="ClickMeForCustomStuff" onclick="myFunction()">ClickMeForCustomStuff</button></form>
+<div id="result"></div>
+<script type="text/javascript">
+function myFunction() {
+var zoneGuide = getZoneGuide();
+var useful = getUseful();
+var improvement = getDropDownValue();
+
+var evtProps = {
+zone_guide: zoneGuide,
+useful: useful,
+improvement: improvement,
+};
+
+// for android
+if (window.CleverTap) {
+//to push event
+CleverTap.pushEvent("Survey Form Filled", JSON.stringify(evtProps));
+}
+
+//to push to profile data
+var profileProps = {
+zone_guide: zoneGuide,
+useful: useful,
+improvement: improvement,
+};
+if (window.CleverTap) {
+//to push profile
+CleverTap.pushProfile(JSON.stringify(profileProps));
+}
+
+// for IOS
+var evtMessage = {
+action: "recordEventWithProps",
+event: "Survey Form Filled",
+props: evtProps,
+};
+if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap) {
+// Call iOS interface
+window.webkit.messageHandlers.clevertap.postMessage(evtMessage);
+}
+var profileMessage = {
+action: "profilePush",
+properties: profileProps,
+};
+if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap) {
+// Call iOS interface
+window.webkit.messageHandlers.clevertap.postMessage(profileMessage);
+}
+closediv();
+}
+function getZoneGuide() {
+var ele = document.getElementsByName("zone_guide");
+for (i = 0; i < ele.length; i++) {
+if (ele[i].checked) {
+//document.getElementById("result").innerHTML = "zone: " + ele[i].value;
+return ele[i].value;
+}
+}
+}
+function getUseful() {
+var ele = document.getElementsByName("optradio");
+for (i = 0; i < ele.length; i++) {
+if (ele[i].checked) {
+//document.getElementById("result").innerHTML = "useful: " + ele[i].value;
+return ele[i].value;
+}
+}
+}
+function getDropDownValue() {
+//document.getElementById("result").innerHTML = document.getElementById("improve").value;
+return document.getElementById("improve").value;
+}
+function closediv() {
+window.location.replace("wzrk://thisisadummylink");
+}
+</script>
+</body>
+</html>
